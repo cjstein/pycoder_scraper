@@ -7,5 +7,19 @@ First clone the repo then install the requirements
     pip install -r requirements.txt
 
 ### Usage
-On the first run of the script, the script will create the database and tables.
-Run the following:
+##### Creating and updating the database
+To create the DB the first time or update it run the following command:
+
+    python main.py
+
+
+##### Searching the database
+To search the database run the following command with the -s or --search flag:
+
+    python main.py -s <search term>
+
+or
+
+    python main.py --search <search term>
+
+This will print out a list of the issues that match the search term, along with the link in the issue for where it was found
