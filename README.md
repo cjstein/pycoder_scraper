@@ -22,4 +22,5 @@ or
 
     python main.py --search <search term>
 
-This will print out a list of the issues that match the search term, along with the link in the issue for where it was found
+This will print out a list of the issues that match the search term,
+along with the snippet of the article it came from in the issue for where it was found.
