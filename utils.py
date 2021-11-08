@@ -1,8 +1,5 @@
 from pathlib import Path
-from bs4 import BeautifulSoup
-import feedparser
 import sqlite3
-import requests
 
 
 class Database:
@@ -22,18 +19,19 @@ class Database:
         issue integer NOT NULL,
         title text NOT NULL,
         url text NOT NULL,
-        body text NOT NULL
+        body text NOT NULL,
+        source_info text
         );
         """)
         return None
 
-    def to_article(self, issue, title, url, body):
-        return Article(issue, title, url, body)
+    def to_article(self, title, url, issue, description, source):
+        return Article(title, url, issue, description, source)
 
-    def insert_article(self, issue, title, url, body):
+    def insert_article(self, title, url, issue, description, source):
         self.cursor.execute(f"""
-        INSERT INTO articles (issue, title, url, body) VALUES (?, ?, ?, ?)
-        """, (issue, title, url, body))
+        INSERT INTO articles (issue, title, url, body, source_info) VALUES (?, ?, ?, ?, ?)
+        """, (title, url, issue, description, source))
         self.conn.commit()
 
     def get_articles(self):
@@ -47,15 +45,13 @@ class Database:
     def get_latest_issue_number(self):
         self.cursor.execute("""SELECT MAX(issue) FROM articles""")
         self.latest_issue = self.cursor.fetchone()[0]
+        return self.latest_issue if self.latest_issue else 0
 
     def search_articles(self, search_term):
         self.cursor.execute(f"""
         SELECT * FROM articles WHERE body LIKE ?
         """, (f'%{search_term}%',))
-        # return self.cursor.fetchall()
         articles = self.cursor.fetchall()
-        # for article in articles:
-        #     print(*article)
         return [self.to_article(*article[1:]) for article in articles]
 
 
@@ -63,11 +59,12 @@ class Article:
     """
     Article class for storing and retrieving articles from the database.
     """
-    def __init__(self, issue, title, url, body):
+    def __init__(self, title, url, issue, description, source):
         self.issue = issue
         self.title = title
         self.url = url
-        self.body = body
+        self.description = description
+        self.source = source
 
     def __str__(self):
         return f"{self.issue} - {self.title}"
@@ -76,7 +73,8 @@ class Article:
         return f"{self.issue} - {self.title}"
 
     def to_db(self):
-        return self.issue, self.title, self.url, self.body
+        # title, url, issue, description, source
+        return self.title, self.url, self.issue, self.description, self.source
 
     @property
     def issue_url(self):

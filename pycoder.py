@@ -3,17 +3,30 @@ This file is the high level flow of the program.  Most the action can be found i
 """
 import argparse
 import utils
+import scrapper
 
 
 def main():
-
-    # TODO Check to see if a DB has been created, if so, load it and update it, else create a new one and populate it.
-    # TODO Load the feed
-    # TODO determine which issues are new and which ones have been already entered
-    # TODO cycle through the Entries of new ones
-    # TODO parse the entry, load it into the database
     print("main loop")
-    print(utils.get_or_create_db())
+    db = utils.Database()
+    db.create_table()
+    latest_issue = db.get_latest_issue_number()
+    soup = scrapper.create_soup_obj_from_url(scrapper.ISSUES_URL)
+
+    ids = scrapper.get_issue_link_ids(soup)
+    for id_ in ids:
+        if id_ <= latest_issue:
+            continue
+        print(f"Issue {id_}")
+        soup = scrapper.create_soup_obj_from_url(f"{scrapper.ISSUES_URL}/{id_}")
+        html = scrapper.get_articles_sections(soup, "h2", "Article")
+        soup = scrapper.BeautifulSoup(html, scrapper.HTML_PARSER)
+        for article in scrapper.get_articles_from_issue(soup, issue_id=id_):
+            print(article)
+            article_page = utils.Article(article.name, article.url, article.issue, article.description, article.source)
+            title, url, issue, description, source = article_page.to_db()
+            db.insert_article(title, url, issue, description, source)
+        print()
 
 
 def search_db(search_term: str):
