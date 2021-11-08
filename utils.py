@@ -31,7 +31,7 @@ class Database:
     def insert_article(self, title, url, issue, description, source):
         self.cursor.execute(f"""
         INSERT INTO articles (issue, title, url, body, source_info) VALUES (?, ?, ?, ?, ?)
-        """, (title, url, issue, description, source))
+        """, (issue, title, url, description, source))
         self.conn.commit()
 
     def get_articles(self):
