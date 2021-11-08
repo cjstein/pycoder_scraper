@@ -30,7 +30,10 @@ def main():
 
 
 def search_db(search_term: str):
-    print(f'Search loop for {search_term}')
+    db = utils.Database()
+    articles = db.search_articles(search_term)
+    for article in articles:
+        print(article)
 
 
 if __name__ == '__main__':

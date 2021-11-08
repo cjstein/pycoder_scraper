@@ -67,13 +67,12 @@ class Article:
         self.source = source
 
     def __str__(self):
-        return f"{self.issue} - {self.title}"
+        return f"{self.issue} || {self.title} || {self.description} || {self.url}"
 
     def __repr__(self):
-        return f"{self.issue} - {self.title}"
+        return f"Article({self.issue}, {self.title}"
 
     def to_db(self):
-        # title, url, issue, description, source
         return self.title, self.url, self.issue, self.description, self.source
 
     @property
