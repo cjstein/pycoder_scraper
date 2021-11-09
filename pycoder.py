@@ -10,12 +10,13 @@ def main():
     print("main loop")
     db = utils.Database()
     db.create_table()
-    latest_issue = db.get_latest_issue_number()
+    issues_in_db = db.get_issues_from_db()
     soup = scrapper.create_soup_obj_from_url(scrapper.ISSUES_URL)
 
     ids = scrapper.get_issue_link_ids(soup)
     for id_ in ids:
-        if id_ <= latest_issue:
+        if id_ in issues_in_db:
+            print("skipping issue {}".format(id_))
             continue
         print(f"Issue {id_}")
         soup = scrapper.create_soup_obj_from_url(f"{scrapper.ISSUES_URL}/{id_}")

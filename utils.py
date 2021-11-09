@@ -47,6 +47,11 @@ class Database:
         self.latest_issue = self.cursor.fetchone()[0]
         return self.latest_issue if self.latest_issue else 0
 
+    def get_issues_from_db(self):
+        self.cursor.execute("""SELECT DISTINCT issue FROM articles""")
+        issues = self.cursor.fetchall()
+        return [issue[0] for issue in issues]
+
     def search_articles(self, search_term):
         self.cursor.execute(f"""
         SELECT * FROM articles WHERE body LIKE ?
